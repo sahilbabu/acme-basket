@@ -18,12 +18,20 @@ use SahilBabu\AcmeBasket\Events\EventDispatcher;
  */
 class BasketTest extends TestCase
 {
+
   /** @var array<string, array{name: string, price: float}> */
   private array $productCatalog;
+
   /** @var array<int, array{threshold: float, cost: float}> */
   private array $deliveryRules;
   /** @var array<int, array{productCode: string, quantity: int, discount: float}> */
   private array $offers;
+
+  private $config;
+  private $deliveryService;
+  private $offerService;
+  private $logger;
+  private $basket;
 
   protected function setUp(): void
   {
@@ -42,47 +50,81 @@ class BasketTest extends TestCase
     $this->offers = [
       ['productCode' => 'R01', 'quantity' => 2, 'discount' => 32.95 / 2]
     ];
+
+    $dispatcher = new EventDispatcher();
+    $this->deliveryService = new DeliveryService($this->deliveryRules);
+    $this->offerService = new OfferService($this->offers, $dispatcher);
+    $this->loggingService = new LoggingService(new NullLogger());
+    $this->basket = new Basket($this->productCatalog, $this->deliveryService, $this->offerService, $this->loggingService, $dispatcher);
   }
 
   /**
-   * Test the basket totals.
+   * Test add product to the basket.
    * @return void
    */
-  public function testBasketTotals(): void
+  public function testAddProduct()
   {
-    $dispatcher = new EventDispatcher();
-    $deliveryService = new DeliveryService($this->deliveryRules);
-    $offerService = new OfferService($this->offers, $dispatcher);
-    $loggingService = new LoggingService(new NullLogger());
+    $this->basket->add('R01');
+    $items = $this->basket->getProducts();
+    $this->assertCount(1, $items);
+    $this->assertSame('R01', $items[0]->code);
+  }
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
+  /**
+   * Test remove product from the basket.
+   * @return void
+   */
+  public function testRemoveProduct()
+  {
+    $this->basket->add('R01');
+    $this->basket->remove('R01');
+    $this->assertCount(0, $this->basket->getProducts());
+    $this->basket->clear();
+  }
 
-    $basket->add('B01');
-    $basket->add('G01');
-    // $this->assertEquals(37.85, $basket->total(), '', 0.01);
-    $this->assertEquals(37.85, $basket->total());
-    $this->assertEquals('37.85', $basket->getTotalInDollars());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
-    $basket->add('R01');
-    $basket->add('R01');
-    $this->assertEquals(54.37, $basket->total());
-    $this->assertEquals('54.37', $basket->getTotalInDollars());
+  /**
+   * Test the basket totals with offers
+   * @return void
+   */
+  public function testTotalWithOffers(): void
+  {
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
-    $basket->add('R01');
-    $basket->add('G01');
-    $this->assertEquals(60.85, $basket->total());
-    $this->assertEquals('60.85', $basket->getTotalInDollars());
+    $this->basket->add('B01');
+    $this->basket->add('G01');
+    // $this->assertEquals(37.85, $this->basket->total(), '', 0.01);
+    $this->assertEquals(37.85, $this->basket->total());
+    $this->assertEquals('37.85', $this->basket->getTotalInDollars());
+    $this->basket->clear();
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
-    $basket->add('B01');
-    $basket->add('B01');
-    $basket->add('R01');
-    $basket->add('R01');
-    $basket->add('R01');
-    $this->assertEquals(98.27, $basket->total());
-    $this->assertEquals('98.27', $basket->getTotalInDollars());
+
+    $this->basket->add('R01');
+    $this->basket->add('R01');
+    $this->assertEquals(54.37, $this->basket->total());
+    $this->assertEquals('54.37', $this->basket->getTotalInDollars());
+    $this->basket->clear();
+
+    $this->basket->add('R01');
+    $this->basket->add('G01');
+    $this->assertEquals(60.85, $this->basket->total());
+    $this->assertEquals('60.85', $this->basket->getTotalInDollars());
+    $this->basket->clear();
+  }
+
+  /**
+   * Test the with offer and delivery charges.
+   * @return void
+   */
+  public function testTotalWithOffersAndDeliveryCharges()
+  {
+    $this->basket->add('B01');
+    $this->basket->add('B01');
+    $this->basket->add('R01');
+    $this->basket->add('R01');
+    $this->basket->add('R01');
+    $this->assertEquals(98.27, $this->basket->total());
+    $this->assertEquals('98.27', $this->basket->getTotalInDollars());
+    $this->basket->clear();
   }
 
   /**
@@ -91,19 +133,11 @@ class BasketTest extends TestCase
    */
   public function testClearBasket(): void
   {
-    $dispatcher = new EventDispatcher();
-    $deliveryService = new DeliveryService($this->deliveryRules);
-    $offerService = new OfferService($this->offers, $dispatcher);
-    $loggingService = new LoggingService(new NullLogger());
+    $this->basket->add('B01');
+    $this->basket->add('G01');
+    $this->assertCount(2, $this->basket->getProducts());
 
-
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
-
-    $basket->add('B01');
-    $basket->add('G01');
-    $this->assertCount(2, $basket->getProducts());
-
-    $basket->clear();
-    $this->assertCount(0, $basket->getProducts());
+    $this->basket->clear();
+    $this->assertCount(0, $this->basket->getProducts());
   }
 }
