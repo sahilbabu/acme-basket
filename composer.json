@@ -1,0 +1,38 @@
+{
+  "name": "sahilbabu/acme-basket",
+  "description": "ThriveCart Code Challenge (Acme Widget Co Basket)",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mudassar Ali",
+      "email": "sahil_bwp@yahoo.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "scripts": {
+    "test": "phpunit",
+    "lint": "phpstan analyse",
+    "phpstan": "vendor/bin/phpstan analyse -l 9 src"
+  },
+  "autoload": {
+    "psr-4": {
+      "SahilBabu\\AcmeBasket\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SahilBabu\\AcmeBasket\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "psr/log": "^1.1",
+    "symfony/dependency-injection": "^7.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.2",
+    "phpstan/phpstan": "^1.11",
+    "symfony/var-dumper": "^7.1"
+  }
+}

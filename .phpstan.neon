@@ -1,0 +1,13 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+    level: max
+    paths:
+        - src/
+        - tests/
+    autoload_files:
+        - %rootDir%/vendor/autoload.php
+    ignoreErrors:
+        # Example to ignore specific errors
+        - '#Some\\Ignored\\Error#'
