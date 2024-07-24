@@ -2,12 +2,11 @@
 
 namespace SahilBabu\AcmeBasket;
 
-use SahilBabu\AcmeBasket\Models\Product;
-use SahilBabu\AcmeBasket\Services\DeliveryService;
-use SahilBabu\AcmeBasket\Services\OfferService;
 use SahilBabu\AcmeBasket\Interfaces\BasketInterface;
-use SahilBabu\AcmeBasket\Services\LoggingService;
+use SahilBabu\AcmeBasket\Services\{DeliveryService, LoggingService, OfferService};
+use SahilBabu\AcmeBasket\Models\Product;
 use InvalidArgumentException;
+use SahilBabu\AcmeBasket\Events\{Event, EventDispatcher};
 
 /**
  * Class Basket
@@ -28,6 +27,8 @@ class Basket implements BasketInterface
   private OfferService $offerService;
   private LoggingService $loggingService;
 
+  private EventDispatcher $dispatcher;
+
   /**
    * Basket constructor.
    * @param array<string, array{name: string, price: float}> $productCatalog
@@ -39,12 +40,14 @@ class Basket implements BasketInterface
     array $productCatalog,
     DeliveryService $deliveryService,
     OfferService $offerService,
-    LoggingService $loggingService
+    LoggingService $loggingService,
+    EventDispatcher $dispatcher
   ) {
     $this->productCatalog = $productCatalog;
     $this->deliveryService = $deliveryService;
     $this->offerService = $offerService;
     $this->loggingService = $loggingService;
+    $this->dispatcher = $dispatcher;
   }
 
   /**
@@ -63,6 +66,11 @@ class Basket implements BasketInterface
       (int) ($this->productCatalog[$productCode]['price'] * 100)
     );
     $this->loggingService->log("Added product: $productCode");
+
+    /**
+     *  event handler
+     */
+    $this->dispatcher->dispatch(new Event('product_added', ['product' => $this->productCatalog[$productCode]]));
   }
 
   /**
@@ -76,6 +84,10 @@ class Basket implements BasketInterface
         unset($this->products[$index]);
         $this->products = array_values($this->products);  // Reindex the array
         $this->loggingService->log("Removed product: $productCode");
+        /**
+         *  event handler
+         */
+        $this->dispatcher->dispatch(new Event('product_removed', ['product' => $productCode]));
         return;
       }
     }

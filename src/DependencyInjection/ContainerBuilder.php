@@ -5,10 +5,11 @@ namespace SahilBabu\AcmeBasket\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Psr\Log\NullLogger;
-use SahilBabu\AcmeBasket\Services\DeliveryService;
-use SahilBabu\AcmeBasket\Services\OfferService;
-use SahilBabu\AcmeBasket\Basket;
-use SahilBabu\AcmeBasket\Services\LoggingService;
+use SahilBabu\AcmeBasket\Basket;;
+use SahilBabu\AcmeBasket\Services\{DeliveryService, LoggingService, OfferService};
+use SahilBabu\AcmeBasket\Events\EventDispatcher;
+
+
 
 /**
  * Class ContainerBuilder
@@ -29,11 +30,15 @@ class ContainerBuilder
   {
     $containerBuilder = new SymfonyContainerBuilder();
 
+    // Register EventDispatcher service
+    $containerBuilder->register('event_dispatcher', EventDispatcher::class);
+
     $containerBuilder->register('delivery_service', DeliveryService::class)
       ->addArgument($deliveryRules);
 
     $containerBuilder->register('offer_service', OfferService::class)
-      ->addArgument($offers);
+      ->addArgument($offers)
+     ->addArgument('event_dispatcher');
 
     $containerBuilder->register('logger', NullLogger::class);
 
@@ -44,7 +49,8 @@ class ContainerBuilder
       ->addArgument($productCatalog)
       ->addArgument(new Reference('delivery_service'))
       ->addArgument(new Reference('offer_service'))
-      ->addArgument(new Reference('logging_service'));
+      ->addArgument(new Reference('logging_service'))
+      ->addArgument(new Reference('event_dispatcher'));
 
     return $containerBuilder;
   }

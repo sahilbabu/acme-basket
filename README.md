@@ -7,8 +7,10 @@ This package implements a shopping basket for Acme Widget Co with delivery rules
 - Add, remove, and clear products in the basket.
 - Calculate total costs including special offers and delivery fees.
 - Configurable product catalog, delivery rules, and offers.
+- Events Dispatcher support (Product add /remove , offer apply  etc).
 - Logging of operations.
-- Unit tests and static analysis.
+- Unit tests 
+- Static analysis.
 
 ## Installation
 

@@ -3,6 +3,7 @@
 namespace SahilBabu\AcmeBasket\Services;
 
 use SahilBabu\AcmeBasket\Models\Product;
+use SahilBabu\AcmeBasket\Events\{Event, EventDispatcher};
 
 /**
  * Class OfferService
@@ -15,13 +16,16 @@ class OfferService
   /** @var array<int, array{productCode: string, quantity: int, discount: float}> */
   private array $offers;
 
+  private EventDispatcher $dispatcher;
+
   /**
    * OfferService constructor.
    * @param array<int, array{productCode: string, quantity: int, discount: float}> $offers
    */
-  public function __construct(array $offers)
+  public function __construct(array $offers, EventDispatcher $dispatcher)
   {
     $this->offers = $offers;
+    $this->dispatcher = $dispatcher;
   }
 
   /**
@@ -38,6 +42,10 @@ class OfferService
       if (isset($productCounts[$offer['productCode']]) && $productCounts[$offer['productCode']] >= $offer['quantity']) {
         $discountMultiplier = floor($productCounts[$offer['productCode']] / $offer['quantity']);
         $totalDiscount += (int) round($discountMultiplier * $offer['discount'] * 100);
+        /**
+         * Even if the discount
+         */
+        $this->dispatcher->dispatch(new Event('offer_applied', ['offer' => $productCounts[$offer['productCode']], 'discount' => $totalDiscount]));
       }
     }
 

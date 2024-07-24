@@ -3,12 +3,10 @@
 namespace SahilBabu\AcmeBasket\Tests;
 
 use PHPUnit\Framework\TestCase;
-use SahilBabu\AcmeBasket\Models\Product;
-use SahilBabu\AcmeBasket\Services\DeliveryService;
-use SahilBabu\AcmeBasket\Services\OfferService;
-use SahilBabu\AcmeBasket\Services\LoggingService;
-use SahilBabu\AcmeBasket\Basket;
+use SahilBabu\AcmeBasket\{Basket, Product};
+use SahilBabu\AcmeBasket\Services\{DeliveryService, LoggingService, OfferService};
 use Psr\Log\NullLogger;
+use SahilBabu\AcmeBasket\Events\EventDispatcher;
 
 /**
  * Class BasketTest
@@ -52,11 +50,12 @@ class BasketTest extends TestCase
    */
   public function testBasketTotals(): void
   {
+    $dispatcher = new EventDispatcher();
     $deliveryService = new DeliveryService($this->deliveryRules);
-    $offerService = new OfferService($this->offers);
+    $offerService = new OfferService($this->offers, $dispatcher);
     $loggingService = new LoggingService(new NullLogger());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService);
+    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
 
     $basket->add('B01');
     $basket->add('G01');
@@ -64,19 +63,19 @@ class BasketTest extends TestCase
     $this->assertEquals(37.85, $basket->total());
     $this->assertEquals('37.85', $basket->getTotalInDollars());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService);
+    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
     $basket->add('R01');
     $basket->add('R01');
     $this->assertEquals(54.37, $basket->total());
     $this->assertEquals('54.37', $basket->getTotalInDollars());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService);
+    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
     $basket->add('R01');
     $basket->add('G01');
     $this->assertEquals(60.85, $basket->total());
     $this->assertEquals('60.85', $basket->getTotalInDollars());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService);
+    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
     $basket->add('B01');
     $basket->add('B01');
     $basket->add('R01');
@@ -92,12 +91,13 @@ class BasketTest extends TestCase
    */
   public function testClearBasket(): void
   {
-
+    $dispatcher = new EventDispatcher();
     $deliveryService = new DeliveryService($this->deliveryRules);
-    $offerService = new OfferService($this->offers);
+    $offerService = new OfferService($this->offers, $dispatcher);
     $loggingService = new LoggingService(new NullLogger());
 
-    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService);
+
+    $basket = new Basket($this->productCatalog, $deliveryService, $offerService, $loggingService, $dispatcher);
 
     $basket->add('B01');
     $basket->add('G01');
