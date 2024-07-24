@@ -12,6 +12,18 @@ This package implements a shopping basket for Acme Widget Co with delivery rules
 - Unit tests 
 - Static analysis.
 
+## Important Notes:
+To handling monetary values for a shopping cart requires careful consideration to ensure accuracy and avoid common pitfalls like floating-point rounding errors
+Techniques mostly used  are
+- Represent Money as Integers (Store prices and totals as integers representing cents)
+- Arbitrary Precision  (BCMath Functions like bcadd, bcsub, bcmul, bcdiv)
+- Use a Dedicated Money Library (moneyphp/money, brick/money)
+- Custom Decimal Class (Create a class that encapsulates monetary values, handling precision and rounding internally.)
+
+###   Note: I Used =>
+It's just proof of concept , so i just used  the following approach 
+- Represent Money as Integers (Store prices and totals as integers representing cents)
+
 ## Installation
 
 ### Prerequisites
