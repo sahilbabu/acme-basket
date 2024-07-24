@@ -1,32 +1,38 @@
 version: '3.8'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php_app
+    volumes:
+      - .:/var/www/html
+    environment:
+      - LOG_DIR=/var/log
+
   nginx:
     image: nginx:latest
+    container_name: nginx
     ports:
       - "8080:80"
     volumes:
       - .:/var/www/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - php-fpm
-
-  php-fpm:
-    build: .
-    volumes:
-      - .:/var/www/html
+      - app
 
   db:
     image: mysql:8.0
+    container_name: mysql_db
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpassword
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: acme_basket
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
     volumes:
-      - db-data:/var/lib/mysql
+      - db_data:/var/lib/mysql
 
 volumes:
-  db-data:
+  db_data:
