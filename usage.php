@@ -2,6 +2,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use SahilBabu\AcmeBasket\DependencyInjection\ContainerBuilder;
+use SahilBabu\AcmeBasket\Events\{Event,EventDispatcher};
 
 
 // load from configuration or user hardcode configuration
@@ -21,6 +22,8 @@ $deliveryRules = [
 $offers= [
   ['productCode' => 'R01', 'quantity' => 2, 'discount' => 32.95 / 2]
 ];
+
+// $dispatcher = new EventDispatcher();
 
 $builder = ContainerBuilder::build($productCatalog, $deliveryRules, $offers);
 
