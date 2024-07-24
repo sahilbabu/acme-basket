@@ -1,32 +1,15 @@
+# .github/workflows/ci.yml
 name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: acme_basket
-          MYSQL_USER: user
-          MYSQL_PASSWORD: user_password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - name: Checkout code
@@ -35,38 +18,35 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: mbstring, pdo_mysql
-          tools: composer, phpstan, phpunit
+          php-version: 8.3
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: none
 
-      - name: Copy .env file
-        run: cp .env.example .env
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
       - name: Install dependencies
-        run: composer install
-
-      - name: Run tests
-        run: ./vendor/bin/phpunit
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse
 
-  deploy:
-    runs-on: ubuntu-latest
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit
+
+  docker:
     needs: build
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Deploy to Server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER: ${{ secrets.SERVER }}
-          USER: ${{ secrets.USER }}
+      - name: Build Docker image
+        run: docker build . -t my-php-app:latest
+
+      - name: Push Docker image to Docker Hub
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan $SERVER >> ~/.ssh/known_hosts
-          rsync -avz --exclude '.git' --exclude 'node_modules' ./ $USER@$SERVER:/path/to/your/app
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker tag my-php-app:latest my-dockerhub-username/my-php-app:latest
+          docker push my-dockerhub-username/my-php-app:latest

@@ -1,20 +1,23 @@
-# Use the official PHP-FPM image
-FROM php:8.3-fpm
+# Dockerfile
+FROM php:8.3-cli
 
-# Install necessary PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Copy application source code to /var/www/html
+# Copy existing application directory contents
 COPY . .
 
-# Install project dependencies
+# Install dependencies
 RUN composer install
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Run tests
+CMD ["./vendor/bin/phpunit"]
