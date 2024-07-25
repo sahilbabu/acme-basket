@@ -4,6 +4,7 @@ namespace SahilBabu\AcmeBasket\Services;
 
 use SahilBabu\AcmeBasket\Models\Product;
 use SahilBabu\AcmeBasket\Events\{Event, EventDispatcher};
+use SahilBabu\AcmeBasket\Interfaces\DiscountInterface;
 
 /**
  * Class OfferService
@@ -11,7 +12,7 @@ use SahilBabu\AcmeBasket\Events\{Event, EventDispatcher};
  * @author      Mudassar Ali <sahil_bwp@yahoo.com>
  * @url   https://github.com/sahilbabu/acme-basket
  */
-class OfferService
+class OfferService implements DiscountInterface
 {
   /** @var array<int, array{productCode: string, quantity: int, discount: float}> */
   private array $offers;

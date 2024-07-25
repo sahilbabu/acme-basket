@@ -62,32 +62,4 @@ class ContainerBuilder
 
     return $containerBuilder;
   }
-//  public static function build(array $productCatalog, array $deliveryRules, array $offers): SymfonyContainerBuilder
-//  {
-//    $containerBuilder = new SymfonyContainerBuilder();
-//
-//    // Register EventDispatcher service
-//    $containerBuilder->register('event_dispatcher', EventDispatcher::class);
-//
-//    $containerBuilder->register('delivery_service', DeliveryService::class)
-//      ->addArgument($deliveryRules);
-//
-//    $containerBuilder->register('offer_service', OfferService::class)
-//      ->addArgument($offers)
-//     ->addArgument('event_dispatcher');
-//
-//    $containerBuilder->register('logger', NullLogger::class);
-//
-//    $containerBuilder->register('logging_service', LoggingService::class)
-//      ->addArgument(new Reference('logger'));
-//
-//    $containerBuilder->register('basket', Basket::class)
-//      ->addArgument($productCatalog)
-//      ->addArgument(new Reference('delivery_service'))
-//      ->addArgument(new Reference('offer_service'))
-//      ->addArgument(new Reference('logging_service'))
-//      ->addArgument(new Reference('event_dispatcher'));
-//
-//    return $containerBuilder;
-//  }
 }

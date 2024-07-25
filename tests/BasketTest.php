@@ -30,7 +30,7 @@ class BasketTest extends TestCase
   private $config;
   private $deliveryService;
   private $offerService;
-  private $logger;
+  private $loggingService;
   private $basket;
 
   protected function setUp(): void
