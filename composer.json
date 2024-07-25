@@ -12,7 +12,7 @@
   "minimum-stability": "stable",
   "scripts": {
     "test": "phpunit",
-    "lint": "phpstan analyse",
+    "lint": "phpstan analyse tests",
     "phpstan": "vendor/bin/phpstan analyse -l 9 src"
   },
   "autoload": {
