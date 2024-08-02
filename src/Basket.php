@@ -151,4 +151,5 @@ class Basket implements BasketInterface
   {
     return number_format($this->total(), 2);
   }
+
 }
