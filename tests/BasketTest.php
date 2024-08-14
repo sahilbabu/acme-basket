@@ -55,7 +55,13 @@ class BasketTest extends TestCase
     $this->deliveryService = new DeliveryService($this->deliveryRules);
     $this->offerService = new OfferService($this->offers, $dispatcher);
     $this->loggingService = new LoggingService(new NullLogger());
-    $this->basket = new Basket($this->productCatalog, $this->deliveryService, $this->offerService, $this->loggingService, $dispatcher);
+    $this->basket = new Basket(
+      $this->productCatalog,
+      $this->deliveryService,
+      $this->offerService,
+      $this->loggingService,
+      $dispatcher
+    );
   }
 
   /**
@@ -89,7 +95,6 @@ class BasketTest extends TestCase
    */
   public function testTotalWithOffers(): void
   {
-
     $this->basket->add('B01');
     $this->basket->add('G01');
     // $this->assertEquals(37.85, $this->basket->total(), '', 0.01);

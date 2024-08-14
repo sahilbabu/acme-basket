@@ -22,6 +22,6 @@ interface DiscountInterface
    * @param Product[] $products
    * @return int
    */
-  public function  applyOffers(array $products): int;
+  public function applyOffers(array $products): int;
 
 }

@@ -63,7 +63,7 @@ class Basket implements BasketInterface
     $this->products[] = new Product(
       $productCode,
       $this->productCatalog[$productCode]['name'],
-      (int) ($this->productCatalog[$productCode]['price'] * 100)
+      (int)($this->productCatalog[$productCode]['price'] * 100)
     );
     $this->loggingService->log("Added product: $productCode");
 
@@ -131,7 +131,7 @@ class Basket implements BasketInterface
     $total = $totalAfterDiscount + $deliveryCost;
     $this->loggingService->log("Total cost calculated: " . $total / 100);
 
-    return (int) round($total);
+    return (int)round($total);
   }
 
   /**

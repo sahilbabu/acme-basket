@@ -1,6 +1,7 @@
 <?php
 
 namespace SahilBabu\AcmeBasket\Models;
+
 /**
  * Class Product
  * @package SahilBabu\AcmeBasket\Models

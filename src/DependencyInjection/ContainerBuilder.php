@@ -5,7 +5,8 @@ namespace SahilBabu\AcmeBasket\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Psr\Log\NullLogger;
-use SahilBabu\AcmeBasket\Basket;;
+use SahilBabu\AcmeBasket\Basket;
+
 use SahilBabu\AcmeBasket\Services\{DeliveryService, LoggingService, OfferService};
 use SahilBabu\AcmeBasket\Events\{Event, EventDispatcher};
 
