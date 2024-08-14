@@ -12,7 +12,6 @@ use Psr\Log\LoggerInterface;
  */
 class LoggingService
 {
-  
   /**
    * @var LoggerInterface Log
    */
