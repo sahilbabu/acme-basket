@@ -15,7 +15,6 @@ use SahilBabu\AcmeBasket\Models\Product;
  */
 interface DiscountInterface
 {
-
   /**
    * Add a product to the basket.
    *

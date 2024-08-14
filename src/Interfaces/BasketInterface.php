@@ -15,6 +15,7 @@ use SahilBabu\AcmeBasket\Models\Product;
  */
 interface BasketInterface
 {
+
   /**
    * Add a product to the basket.
    * @param string $productCode
